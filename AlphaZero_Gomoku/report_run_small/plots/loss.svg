@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420">
+  <rect x="0" y="0" width="800" height="420" fill="#ffffff" />
+  <line x1="60" y1="360" x2="740" y2="360" stroke="#333333" stroke-width="2" />
+  <line x1="60" y1="60" x2="60" y2="360" stroke="#333333" stroke-width="2" />
+  <text x="400.0" y="30" text-anchor="middle" font-size="22" font-family="Arial">Training Loss</text>
+  <text x="400.0" y="405" text-anchor="middle" font-size="16" font-family="Arial">Batch</text>
+  <text x="24" y="210.0" text-anchor="middle" font-size="16" font-family="Arial" transform="rotate(-90 24 210.0)">Loss</text>
+  <text x="60" y="50" font-size="13" font-family="Arial">4.814</text>
+  <text x="60" y="380" font-size="13" font-family="Arial">3.954</text>
+  <text x="60" y="395" font-size="13" font-family="Arial">1</text>
+  <text x="740" y="395" text-anchor="end" font-size="13" font-family="Arial">20</text>
+  <polyline fill="none" stroke="#dc2626" stroke-width="3" points="60.00,197.70 95.79,360.00 131.58,227.27 167.37,136.55 203.16,168.22 238.95,166.82 274.74,183.53 310.53,132.61 346.32,137.29 382.11,196.80 417.89,160.70 453.68,299.91 489.47,183.66 525.26,219.34 561.05,129.74 596.84,60.00 632.63,196.92 668.42,169.88 704.21,96.14 740.00,177.06" />
+</svg>

@@ -1,0 +1,20 @@
+{
+  "batch_size": 32,
+  "board_height": 6,
+  "board_width": 6,
+  "buffer_size": 1000,
+  "c_puct": 5,
+  "check_freq": 5,
+  "epochs": 3,
+  "eval_games": 4,
+  "game_batch_num": 20,
+  "init_model": null,
+  "kl_targ": 0.02,
+  "learn_rate": 0.002,
+  "n_in_row": 4,
+  "n_playout": 50,
+  "output_dir": "report_run_small",
+  "play_batch_size": 1,
+  "pure_mcts_playout_num": 100,
+  "temp": 1.0
+}

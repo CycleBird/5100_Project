@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420">
+  <rect x="0" y="0" width="800" height="420" fill="#ffffff" />
+  <line x1="60" y1="360" x2="740" y2="360" stroke="#333333" stroke-width="2" />
+  <line x1="60" y1="60" x2="60" y2="360" stroke="#333333" stroke-width="2" />
+  <text x="400.0" y="30" text-anchor="middle" font-size="22" font-family="Arial">Policy Entropy</text>
+  <text x="400.0" y="405" text-anchor="middle" font-size="16" font-family="Arial">Batch</text>
+  <text x="24" y="210.0" text-anchor="middle" font-size="16" font-family="Arial" transform="rotate(-90 24 210.0)">Entropy</text>
+  <text x="60" y="50" font-size="13" font-family="Arial">3.582</text>
+  <text x="60" y="380" font-size="13" font-family="Arial">3.499</text>
+  <text x="60" y="395" font-size="13" font-family="Arial">1</text>
+  <text x="740" y="395" text-anchor="end" font-size="13" font-family="Arial">20</text>
+  <polyline fill="none" stroke="#ea580c" stroke-width="3" points="60.00,63.24 95.79,147.29 131.58,164.54 167.37,329.52 203.16,119.59 238.95,309.60 274.74,205.38 310.53,80.16 346.32,360.00 382.11,63.20 417.89,60.00 453.68,68.09 489.47,68.44 525.26,72.75 561.05,88.47 596.84,111.10 632.63,142.96 668.42,181.38 704.21,224.51 740.00,272.69" />
+</svg>
