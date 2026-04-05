@@ -59,40 +59,53 @@ class Net(nn.Module):
 class PolicyValueNet():
     """policy-value network """
     def __init__(self, board_width, board_height,
-                 model_file=None, use_gpu=False):
-        self.use_gpu = use_gpu
+                 model_file=None, device='auto'):
         self.board_width = board_width
         self.board_height = board_height
         self.l2_const = 1e-4  # coef of l2 penalty
+        self.device = self._resolve_device(device)
+        self.use_gpu = self.device.type != 'cpu'
         # the policy value net module
-        if self.use_gpu:
-            self.policy_value_net = Net(board_width, board_height).cuda()
-        else:
-            self.policy_value_net = Net(board_width, board_height)
+        self.policy_value_net = Net(board_width, board_height).to(self.device)
         self.optimizer = optim.Adam(self.policy_value_net.parameters(),
                                     weight_decay=self.l2_const)
 
         if model_file:
-            net_params = torch.load(model_file, map_location='cuda' if self.use_gpu else 'cpu')
+            net_params = torch.load(model_file, map_location=self.device)
             self.policy_value_net.load_state_dict(net_params)
+
+    def _resolve_device(self, device):
+        if device == 'auto':
+            if torch.cuda.is_available():
+                return torch.device('cuda')
+            if getattr(torch.backends, 'mps', None) is not None and torch.backends.mps.is_available():
+                return torch.device('mps')
+            return torch.device('cpu')
+        if device == 'cuda':
+            if not torch.cuda.is_available():
+                raise ValueError('CUDA is not available in this environment.')
+            return torch.device('cuda')
+        if device == 'mps':
+            if getattr(torch.backends, 'mps', None) is None or not torch.backends.mps.is_available():
+                raise ValueError('MPS is not available in this environment.')
+            return torch.device('mps')
+        if device == 'cpu':
+            return torch.device('cpu')
+        raise ValueError('Unsupported device: {}'.format(device))
+
+    def _to_tensor(self, array_like):
+        return torch.as_tensor(np.array(array_like), dtype=torch.float32, device=self.device)
 
     def policy_value(self, state_batch):
         """
         input: a batch of states
         output: a batch of action probabilities and state values
         """
-        if self.use_gpu:
-            state_batch = torch.FloatTensor(state_batch).cuda()
-            with torch.no_grad():
-                log_act_probs, value = self.policy_value_net(state_batch)
-            act_probs = np.exp(log_act_probs.cpu().numpy())
-            return act_probs, value.cpu().numpy()
-        else:
-            state_batch = torch.FloatTensor(state_batch)
-            with torch.no_grad():
-                log_act_probs, value = self.policy_value_net(state_batch)
-            act_probs = np.exp(log_act_probs.numpy())
-            return act_probs, value.numpy()
+        state_batch = self._to_tensor(state_batch)
+        with torch.no_grad():
+            log_act_probs, value = self.policy_value_net(state_batch)
+        act_probs = np.exp(log_act_probs.detach().cpu().numpy())
+        return act_probs, value.detach().cpu().numpy()
 
     def policy_value_fn(self, board):
         """
@@ -103,31 +116,19 @@ class PolicyValueNet():
         legal_positions = board.availables
         current_state = np.ascontiguousarray(board.current_state().reshape(
                 -1, 4, self.board_width, self.board_height))
-        if self.use_gpu:
-            with torch.no_grad():
-                log_act_probs, value = self.policy_value_net(
-                        torch.from_numpy(current_state).cuda().float())
-            act_probs = np.exp(log_act_probs.cpu().numpy().flatten())
-            value = value.cpu().numpy()[0][0]
-        else:
-            with torch.no_grad():
-                log_act_probs, value = self.policy_value_net(
-                        torch.from_numpy(current_state).float())
-            act_probs = np.exp(log_act_probs.numpy().flatten())
-            value = value.numpy()[0][0]
+        with torch.no_grad():
+            log_act_probs, value = self.policy_value_net(
+                    torch.as_tensor(current_state, dtype=torch.float32, device=self.device))
+        act_probs = np.exp(log_act_probs.detach().cpu().numpy().flatten())
+        value = value.detach().cpu().numpy()[0][0]
         act_probs = zip(legal_positions, act_probs[legal_positions])
         return act_probs, value
 
     def train_step(self, state_batch, mcts_probs, winner_batch, lr):
         """perform a training step"""
-        if self.use_gpu:
-            state_batch = torch.FloatTensor(state_batch).cuda()
-            mcts_probs = torch.FloatTensor(mcts_probs).cuda()
-            winner_batch = torch.FloatTensor(winner_batch).cuda()
-        else:
-            state_batch = torch.FloatTensor(state_batch)
-            mcts_probs = torch.FloatTensor(mcts_probs)
-            winner_batch = torch.FloatTensor(winner_batch)
+        state_batch = self._to_tensor(state_batch)
+        mcts_probs = self._to_tensor(mcts_probs)
+        winner_batch = self._to_tensor(winner_batch)
 
         # zero the parameter gradients
         self.optimizer.zero_grad()

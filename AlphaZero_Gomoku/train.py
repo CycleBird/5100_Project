@@ -100,17 +100,21 @@ class TrainPipeline():
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = config.get('pure_mcts_playout_num', 1000)
         self.output_dir = config.get('output_dir')
+        self.device = config.get('device', 'auto')
         self.metrics_logger = MetricsLogger(self.output_dir)
         self.run_started_at = time.time()
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
                                                    self.board_height,
-                                                   model_file=init_model)
+                                                   model_file=init_model,
+                                                   device=self.device)
         else:
             # start training from a new policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
-                                                   self.board_height)
+                                                   self.board_height,
+                                                   device=self.device)
+        print("training device: {}".format(self.policy_value_net.device))
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
@@ -133,6 +137,7 @@ class TrainPipeline():
             'eval_games': self.eval_games,
             'pure_mcts_playout_num': self.pure_mcts_playout_num,
             'output_dir': self.output_dir,
+            'device': str(self.policy_value_net.device),
             'init_model': init_model,
         })
 
@@ -333,6 +338,7 @@ def build_parser():
     parser.add_argument('--eval-games', type=int, default=10)
     parser.add_argument('--pure-mcts-playout-num', type=int, default=1000)
     parser.add_argument('--output-dir', default='training_artifacts')
+    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto')
     return parser
 
 
@@ -358,6 +364,7 @@ if __name__ == '__main__':
             'eval_games': args.eval_games,
             'pure_mcts_playout_num': args.pure_mcts_playout_num,
             'output_dir': args.output_dir,
+            'device': args.device,
         }
     )
     training_pipeline.run()
