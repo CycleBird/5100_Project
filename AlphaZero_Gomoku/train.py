@@ -73,9 +73,9 @@ class TrainPipeline():
     def __init__(self, init_model=None, config=None):
         config = config or {}
         # params of the board and the game
-        self.board_width = config.get('board_width', 6)
-        self.board_height = config.get('board_height', 6)
-        self.n_in_row = config.get('n_in_row', 4)
+        self.board_width = config.get('board_width', 8) # 棋盘大小在这改，或者搜board_width 
+        self.board_height = config.get('board_height', 8)
+        self.n_in_row = config.get('n_in_row', 4)   # 胜利条件在这改，或者搜n_in_row
         self.board = Board(width=self.board_width,
                            height=self.board_height,
                            n_in_row=self.n_in_row)
@@ -100,21 +100,23 @@ class TrainPipeline():
         # the opponent to evaluate the trained policy
         self.pure_mcts_playout_num = config.get('pure_mcts_playout_num', 1000)
         self.output_dir = config.get('output_dir')
-        self.device = config.get('device', 'auto')
+        # self.device = config.get('device', 'auto')
         self.metrics_logger = MetricsLogger(self.output_dir)
         self.run_started_at = time.time()
         if init_model:
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
                                                    self.board_height,
-                                                   model_file=init_model,
-                                                   device=self.device)
+                                                   model_file=init_model)
+                                                #    model_file=init_model,
+                                                #    device=self.device)
         else:
             # start training from a new policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
-                                                   self.board_height,
-                                                   device=self.device)
-        print("training device: {}".format(self.policy_value_net.device))
+                                                   self.board_height)
+        #                                            self.board_height,
+        #                                            device=self.device)
+        # print("training device: {}".format(self.policy_value_net.device))
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
@@ -137,7 +139,7 @@ class TrainPipeline():
             'eval_games': self.eval_games,
             'pure_mcts_playout_num': self.pure_mcts_playout_num,
             'output_dir': self.output_dir,
-            'device': str(self.policy_value_net.device),
+            # 'device': str(self.policy_value_net.device),
             'init_model': init_model,
         })
 
@@ -321,9 +323,9 @@ class TrainPipeline():
 def build_parser():
     parser = argparse.ArgumentParser(description='Train AlphaZero Gomoku and export metrics.')
     parser.add_argument('--init-model', default=None, help='Path to an existing model file.')
-    parser.add_argument('--board-width', type=int, default=6)
-    parser.add_argument('--board-height', type=int, default=6)
-    parser.add_argument('--n-in-row', type=int, default=4)
+    parser.add_argument('--board-width', type=int, default=8)   # 棋盘大小在这改，或者搜board_width
+    parser.add_argument('--board-height', type=int, default=8)
+    parser.add_argument('--n-in-row', type=int, default=4)  # 胜利条件在这改，或者搜n_in_row
     parser.add_argument('--learn-rate', type=float, default=2e-3)
     parser.add_argument('--temp', type=float, default=1.0)
     parser.add_argument('--n-playout', type=int, default=400)
@@ -338,7 +340,7 @@ def build_parser():
     parser.add_argument('--eval-games', type=int, default=10)
     parser.add_argument('--pure-mcts-playout-num', type=int, default=1000)
     parser.add_argument('--output-dir', default='training_artifacts')
-    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto')
+    # parser.add_argument('--device', choices=['auto', 'cpu', 'cuda', 'mps'], default='auto')
     return parser
 
 
@@ -364,7 +366,7 @@ if __name__ == '__main__':
             'eval_games': args.eval_games,
             'pure_mcts_playout_num': args.pure_mcts_playout_num,
             'output_dir': args.output_dir,
-            'device': args.device,
+            # 'device': args.device,
         }
     )
     training_pipeline.run()

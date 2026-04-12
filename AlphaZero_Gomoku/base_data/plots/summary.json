@@ -1,0 +1,11 @@
+{
+  "final_best_win_ratio": 0.9,
+  "final_buffer_size": 10000.0,
+  "final_entropy": 1.3644936084747314,
+  "final_episode_len": 15.0,
+  "final_loss": 1.972908616065979,
+  "final_win_ratio": 0.9,
+  "total_batches": 1500,
+  "total_evaluations": 30,
+  "total_updates": 1497
+}
