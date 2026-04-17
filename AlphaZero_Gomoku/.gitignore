@@ -1,4 +1,4 @@
 *.pyc
 __pycache__/
 training_artifacts/
-prun_run_885/
+prun_run_885_small/

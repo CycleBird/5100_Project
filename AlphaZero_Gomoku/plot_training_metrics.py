@@ -104,8 +104,8 @@ def write_summary(rows, output_dir):
 
 def main():
     parser = argparse.ArgumentParser(description='Create SVG charts from training metrics.csv')
-    parser.add_argument('--metrics-file', default='training_artifacts/metrics.csv')
-    parser.add_argument('--output-dir', default='training_artifacts/plots')
+    parser.add_argument('--metrics-file', default='pruning_training_artifacts/metrics.csv')
+    parser.add_argument('--output-dir', default='pruning_training_artifacts/plots')
     args = parser.parse_args()
 
     rows = load_rows(args.metrics_file)

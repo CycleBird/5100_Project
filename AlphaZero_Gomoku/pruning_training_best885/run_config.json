@@ -1,0 +1,20 @@
+{
+  "batch_size": 512,
+  "board_height": 8,
+  "board_width": 8,
+  "buffer_size": 10000,
+  "c_puct": 5,
+  "check_freq": 50,
+  "epochs": 5,
+  "eval_games": 10,
+  "game_batch_num": 1500,
+  "init_model": null,
+  "kl_targ": 0.02,
+  "learn_rate": 0.002,
+  "n_in_row": 5,
+  "n_playout": 400,
+  "opponent_model_file": "best_policy_8_8_5.model",
+  "output_dir": "pruning_training_artifacts",
+  "play_batch_size": 1,
+  "temp": 1.0
+}

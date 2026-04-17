@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="420">
+  <rect x="0" y="0" width="800" height="420" fill="#ffffff" />
+  <line x1="60" y1="360" x2="740" y2="360" stroke="#333333" stroke-width="2" />
+  <line x1="60" y1="60" x2="60" y2="360" stroke="#333333" stroke-width="2" />
+  <text x="400.0" y="30" text-anchor="middle" font-size="22" font-family="Arial">Evaluation Win Ratio</text>
+  <text x="400.0" y="405" text-anchor="middle" font-size="16" font-family="Arial">Batch</text>
+  <text x="24" y="210.0" text-anchor="middle" font-size="16" font-family="Arial" transform="rotate(-90 24 210.0)">Win Ratio</text>
+  <text x="60" y="50" font-size="13" font-family="Arial">1.000</text>
+  <text x="60" y="380" font-size="13" font-family="Arial">0.000</text>
+  <text x="60" y="395" font-size="13" font-family="Arial">50</text>
+  <text x="740" y="395" text-anchor="end" font-size="13" font-family="Arial">1500</text>
+  <polyline fill="none" stroke="#16a34a" stroke-width="3" points="60.00,360.00 83.45,360.00 106.90,360.00 130.34,360.00 153.79,360.00 177.24,360.00 200.69,360.00 224.14,360.00 247.59,360.00 271.03,360.00 294.48,360.00 317.93,360.00 341.38,360.00 364.83,360.00 388.28,360.00 411.72,360.00 435.17,360.00 458.62,360.00 482.07,360.00 505.52,360.00 528.97,360.00 552.41,360.00 575.86,360.00 599.31,360.00 622.76,360.00 646.21,360.00 669.66,360.00 693.10,360.00 716.55,360.00 740.00,360.00" />
+</svg>

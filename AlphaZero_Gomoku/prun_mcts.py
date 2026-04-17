@@ -2,7 +2,7 @@
 Pruning-based training pipeline for AlphaZero Gomoku
 Rule: 8x8 board, 5 in a row
 Train for 300 batches
-Evaluate every 50 batches against provided pretrained 8x8x5 model
+Evaluate every 50 batches against pure MCTS (original baseline)
 
 @author: Zengzheng Jiang
 """
@@ -14,17 +14,16 @@ import json
 import os
 import random
 import time
-import pickle
 import numpy as np
 from collections import defaultdict, deque
 
 from game import Board, Game
 from mcts_alphaZero_pruned import MCTSPlayer as PrunedMCTSPlayer
-from mcts_alphaZero import MCTSPlayer as StandardMCTSPlayer
+from mcts_pure import MCTSPlayer as PureMCTSPlayer
 from policy_value_net_pytorch import PolicyValueNet
-from policy_value_net_numpy import PolicyValueNetNumpy
 
 from datetime import datetime
+
 
 class MetricsLogger(object):
     def __init__(self, output_dir):
@@ -49,7 +48,7 @@ class MetricsLogger(object):
             'eval_losses',
             'eval_ties',
             'best_win_ratio',
-            'opponent_model_file',
+            'opponent_type',
         ]
         if output_dir:
             os.makedirs(output_dir, exist_ok=True)
@@ -72,37 +71,6 @@ class MetricsLogger(object):
         with open(self.metrics_path, 'a', newline='') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=self.fieldnames)
             writer.writerow(normalized_row)
-
-
-def load_pretrained_numpy_policy(width, height, model_candidates):
-    """
-    Load provided 8x8x5 pretrained model saved in pickle format.
-    Try .model first, then .model2 as fallback.
-    """
-    last_error = None
-    for model_file in model_candidates:
-        if not os.path.exists(model_file):
-            continue
-        try:
-            with open(model_file, 'rb') as f:
-                policy_param = pickle.load(f)
-            print("Loaded pretrained opponent model from:", model_file)
-            return PolicyValueNetNumpy(width, height, policy_param), model_file
-        except Exception as e1:
-            last_error = e1
-            try:
-                with open(model_file, 'rb') as f:
-                    policy_param = pickle.load(f, encoding='bytes')
-                print("Loaded pretrained opponent model from:", model_file)
-                return PolicyValueNetNumpy(width, height, policy_param), model_file
-            except Exception as e2:
-                last_error = e2
-
-    raise RuntimeError(
-        "Could not load any pretrained opponent model from {}. Last error: {}".format(
-            model_candidates, last_error
-        )
-    )
 
 
 class PruningTrainPipeline(object):
@@ -134,8 +102,10 @@ class PruningTrainPipeline(object):
         self.epochs = config.get('epochs', 5)
         self.kl_targ = config.get('kl_targ', 0.02)
         self.check_freq = config.get('check_freq', 50)
-        self.game_batch_num = config.get('game_batch_num', 300)
+        self.game_batch_num = config.get('game_batch_num', 1500)
         self.eval_games = config.get('eval_games', 10)
+        self.pure_mcts_playout_num = config.get('pure_mcts_playout_num', 1000)
+
         self.best_win_ratio = 0.0
         self.output_dir = config.get('output_dir', 'pruning_training_artifacts')
 
@@ -163,16 +133,7 @@ class PruningTrainPipeline(object):
             is_selfplay=1
         )
 
-        # Opponent: provided pretrained 8x8x5 model
-        candidate_models = config.get(
-            'opponent_model_candidates',
-            ['best_policy_8_8_5.model', 'best_policy_8_8_5.model2']
-        )
-        self.opponent_policy, self.opponent_model_file = load_pretrained_numpy_policy(
-            self.board_width,
-            self.board_height,
-            candidate_models
-        )
+        self.opponent_type = 'pure_mcts'
 
         self.metrics_logger.write_config({
             'board_width': self.board_width,
@@ -190,9 +151,10 @@ class PruningTrainPipeline(object):
             'check_freq': self.check_freq,
             'game_batch_num': self.game_batch_num,
             'eval_games': self.eval_games,
+            'pure_mcts_playout_num': self.pure_mcts_playout_num,
             'output_dir': self.output_dir,
             'init_model': init_model,
-            'opponent_model_file': self.opponent_model_file,
+            'opponent_type': self.opponent_type,
         })
 
     def get_equi_data(self, play_data):
@@ -322,9 +284,9 @@ class PruningTrainPipeline(object):
 
     def policy_evaluate(self, n_games=10):
         """
-        Evaluate current pruning-trained model against provided pretrained 8x8x5 model.
+        Evaluate current pruning-trained model against original pure MCTS baseline.
         Current player uses pruning MCTS.
-        Opponent uses standard MCTS + provided pretrained policy.
+        Opponent uses pure/original MCTS.
         """
         current_player = PrunedMCTSPlayer(
             self.policy_value_net.policy_value_fn,
@@ -333,11 +295,9 @@ class PruningTrainPipeline(object):
             is_selfplay=0
         )
 
-        opponent_player = StandardMCTSPlayer(
-            self.opponent_policy.policy_value_fn,
-            c_puct=self.c_puct,
-            n_playout=self.n_playout,
-            is_selfplay=0
+        opponent_player = PureMCTSPlayer(
+            c_puct=5,
+            n_playout=self.pure_mcts_playout_num
         )
 
         eval_board = Board(
@@ -359,8 +319,7 @@ class PruningTrainPipeline(object):
 
         win_ratio = 1.0 * (win_cnt[1] + 0.5 * win_cnt[-1]) / n_games
         print(
-            "vs pretrained {} | win_ratio:{:.3f}, win:{}, lose:{}, tie:{}".format(
-                self.opponent_model_file,
+            "vs pure mcts | win_ratio:{:.3f}, win:{}, lose:{}, tie:{}".format(
                 win_ratio,
                 win_cnt[1],
                 win_cnt[2],
@@ -373,7 +332,7 @@ class PruningTrainPipeline(object):
             'eval_wins': win_cnt[1],
             'eval_losses': win_cnt[2],
             'eval_ties': win_cnt[-1],
-            'opponent_model_file': self.opponent_model_file,
+            'opponent_type': self.opponent_type,
         }
 
     def build_metrics_row(self, batch_index, selfplay_info):
@@ -384,7 +343,7 @@ class PruningTrainPipeline(object):
             'augmented_samples': selfplay_info.get('augmented_samples'),
             'buffer_size': len(self.data_buffer),
             'best_win_ratio': self.best_win_ratio,
-            'opponent_model_file': self.opponent_model_file,
+            'opponent_type': self.opponent_type,
         }
 
     def run(self):
@@ -426,15 +385,27 @@ class PruningTrainPipeline(object):
                     row['best_win_ratio'] = self.best_win_ratio
 
                 self.metrics_logger.log(row)
+
             end_time = datetime.now()
             print("Training end time:", end_time.strftime("%Y-%m-%d %H:%M:%S"))
+
+            duration = end_time - start_time
+            total_seconds = int(duration.total_seconds())
+            hours = total_seconds // 3600
+            minutes = (total_seconds % 3600) // 60
+            seconds = total_seconds % 60
+
+            print("Total duration: {} hours {} minutes {} seconds".format(
+                hours, minutes, seconds
+            ))
+
         except KeyboardInterrupt:
             print('\n\rquit')
 
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        description='Train pruning-based AlphaZero Gomoku on 8x8x5 and evaluate vs pretrained 8x8x5 model.'
+        description='Train pruning-based AlphaZero Gomoku on 8x8x5 and evaluate vs pure MCTS.'
     )
     parser.add_argument('--init-model', default=None, help='Path to an existing PyTorch model file.')
     parser.add_argument('--learn-rate', type=float, default=2e-3)
@@ -447,15 +418,10 @@ def build_parser():
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--kl-targ', type=float, default=0.02)
     parser.add_argument('--check-freq', type=int, default=50)
-    parser.add_argument('--game-batch-num', type=int, default=300)
+    parser.add_argument('--game-batch-num', type=int, default=1500)
     parser.add_argument('--eval-games', type=int, default=10)
+    parser.add_argument('--pure-mcts-playout-num', type=int, default=1000)
     parser.add_argument('--output-dir', default='pruning_training_artifacts')
-    parser.add_argument(
-        '--opponent-models',
-        nargs='*',
-        default=['best_policy_8_8_5.model', 'best_policy_8_8_5.model2'],
-        help='Candidate pretrained opponent model files, tried in order.'
-    )
     return parser
 
 
@@ -480,8 +446,8 @@ if __name__ == '__main__':
             'check_freq': args.check_freq,
             'game_batch_num': args.game_batch_num,
             'eval_games': args.eval_games,
+            'pure_mcts_playout_num': args.pure_mcts_playout_num,
             'output_dir': args.output_dir,
-            'opponent_model_candidates': args.opponent_models,
         }
     )
     training_pipeline.run()
