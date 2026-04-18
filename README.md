@@ -21,11 +21,27 @@ cd AlphaZero_Gomoku
 
 ## 4. 运行训练
 
-最简单的训练方式：
+最基础的训练方式：
 
 ```bash
 python train.py
 ```
+
+剪枝的训练方式：
+
+885规则：
+1. 与最好的885模型对比：
+```bash
+python prun_best.py
+```
+
+2. 与基础mcts对战：
+```bash
+python prun_mcts.py
+```
+884规则：
+
+
 
 如果想生成适合 progress report 的训练数据和图，建议使用带参数的方式，例如：
 
@@ -46,6 +62,7 @@ python train.py \
 
 - `metrics.csv`：每个 batch 的训练指标
 - `run_config.json`：本次训练配置
+- `.model`：本次训练出来的模型
 
 ## 5. 生成训练过程图表
 

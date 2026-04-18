@@ -11,7 +11,7 @@
   "init_model": null,
   "kl_targ": 0.02,
   "learn_rate": 0.002,
-  "n_in_row": 4,
+  "n_in_row": 5,
   "n_playout": 400,
   "opponent_type": "pure_mcts",
   "output_dir": "pruning_training_artifacts",
