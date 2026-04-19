@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="520">
+  <rect x="0" y="0" width="1000" height="520" fill="#ffffff" />
+  <line x1="70" y1="450" x2="930" y2="450" stroke="#333333" stroke-width="2" />
+  <line x1="70" y1="70" x2="70" y2="450" stroke="#333333" stroke-width="2" />
+  <text x="500.0" y="35" text-anchor="middle" font-size="24" font-family="Arial">Evaluation Win Ratio Comparison</text>
+  <text x="500.0" y="500" text-anchor="middle" font-size="16" font-family="Arial">Batch</text>
+  <text x="28" y="260.0" text-anchor="middle" font-size="16" font-family="Arial" transform="rotate(-90 28 260.0)">Win Ratio</text>
+  <text x="70" y="58" font-size="13" font-family="Arial">1.000</text>
+  <text x="70" y="470" font-size="13" font-family="Arial">0.000</text>
+  <text x="70" y="488" font-size="13" font-family="Arial">50</text>
+  <text x="930" y="488" text-anchor="end" font-size="13" font-family="Arial">1500</text>
+  <line x1="70" y1="146.00" x2="930" y2="146.00" stroke="#dddddd" stroke-width="1" stroke-dasharray="4,4" />
+  <line x1="70" y1="222.00" x2="930" y2="222.00" stroke="#dddddd" stroke-width="1" stroke-dasharray="4,4" />
+  <line x1="70" y1="298.00" x2="930" y2="298.00" stroke="#dddddd" stroke-width="1" stroke-dasharray="4,4" />
+  <line x1="70" y1="374.00" x2="930" y2="374.00" stroke="#dddddd" stroke-width="1" stroke-dasharray="4,4" />
+  <polyline fill="none" stroke="#2563eb" stroke-width="3" points="70.00,336.00 99.66,336.00 129.31,260.00 158.97,222.00 188.62,146.00 218.28,184.00 247.93,146.00 277.59,146.00 307.24,70.00 336.90,70.00 366.55,146.00 396.21,146.00 425.86,184.00 455.52,165.00 485.17,184.00 514.83,203.00 544.48,108.00 574.14,108.00 603.79,222.00 633.45,146.00 663.10,222.00 692.76,222.00 722.41,260.00 752.07,146.00 781.72,108.00 811.38,260.00 841.03,146.00 870.69,241.00 900.34,184.00 930.00,108.00" />
+  <polyline fill="none" stroke="#dc2626" stroke-width="3" points="70.00,184.00 99.66,222.00 129.31,108.00 158.97,108.00 188.62,146.00 218.28,146.00 247.93,108.00 277.59,108.00 307.24,146.00 336.90,70.00 366.55,108.00 396.21,108.00 425.86,146.00 455.52,70.00 485.17,70.00 514.83,108.00 544.48,70.00 574.14,108.00 603.79,70.00 633.45,146.00 663.10,70.00 692.76,108.00 722.41,70.00 752.07,146.00 781.72,108.00 811.38,70.00 841.03,70.00 870.69,108.00 900.34,70.00 930.00,70.00" />
+  <polyline fill="none" stroke="#16a34a" stroke-width="3" points="70.00,450.00 99.66,412.00 129.31,374.00 158.97,374.00 188.62,336.00 218.28,374.00 247.93,374.00 277.59,336.00 307.24,374.00 336.90,374.00 366.55,336.00 396.21,336.00 425.86,450.00 455.52,412.00 485.17,412.00 514.83,298.00 544.48,336.00 574.14,374.00 603.79,298.00 633.45,260.00 663.10,412.00 692.76,298.00 722.41,374.00 752.07,336.00 781.72,298.00 811.38,260.00 841.03,298.00 870.69,412.00 900.34,222.00 930.00,260.00" />
+  <polyline fill="none" stroke="#ea580c" stroke-width="3" points="70.00,450.00 99.66,450.00 129.31,450.00 158.97,450.00 188.62,450.00 218.28,450.00 247.93,450.00 277.59,450.00 307.24,450.00 336.90,450.00 366.55,450.00 396.21,450.00 425.86,450.00 455.52,450.00 485.17,450.00 514.83,450.00 544.48,450.00 574.14,450.00 603.79,450.00 633.45,450.00 663.10,450.00 692.76,450.00 722.41,450.00 752.07,450.00 781.72,450.00 811.38,450.00 841.03,450.00 870.69,450.00 900.34,450.00 930.00,450.00" />
+  <rect x="720" y="80" width="190" height="127" fill="#ffffff" stroke="#cccccc" stroke-width="1" rx="8" ry="8" />
+  <line x1="732" y1="105" x2="762" y2="105" stroke="#2563eb" stroke-width="4" />
+  <text x="770" y="110" font-size="14" font-family="Arial">base_data</text>
+  <line x1="732" y1="133" x2="762" y2="133" stroke="#dc2626" stroke-width="4" />
+  <text x="770" y="138" font-size="14" font-family="Arial">pruning_884</text>
+  <line x1="732" y1="161" x2="762" y2="161" stroke="#16a34a" stroke-width="4" />
+  <text x="770" y="166" font-size="14" font-family="Arial">pruning_mcts_885</text>
+  <line x1="732" y1="189" x2="762" y2="189" stroke="#ea580c" stroke-width="4" />
+  <text x="770" y="194" font-size="14" font-family="Arial">pruning_best885</text>
+</svg>
