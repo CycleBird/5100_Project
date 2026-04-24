@@ -31,7 +31,6 @@ def get_window_bounds(board, window_size=6):
     width = board.width
     height = board.height
 
-    # If there are no stones yet, use the full board.
     if not board.states:
         return 0, height - 1, 0, width - 1
 
@@ -47,11 +46,9 @@ def get_window_bounds(board, window_size=6):
     row_min = center_row - half
     col_min = center_col - half
 
-    # Make window_size exactly window_size when possible
     row_max = row_min + window_size - 1
     col_max = col_min + window_size - 1
 
-    # Shift window back inside board if it goes out of bounds
     if row_min < 0:
         row_max += -row_min
         row_min = 0
@@ -67,7 +64,6 @@ def get_window_bounds(board, window_size=6):
         col_min -= shift
         col_max = width - 1
 
-    # Final safeguard
     row_min = max(0, row_min)
     col_min = max(0, col_min)
     row_max = min(height - 1, row_max)
@@ -89,7 +85,6 @@ def get_pruned_moves(board, window_size=6, fallback_to_full=True):
     Returns:
         A list of legal moves after pruning.
     """
-    # If the whole board is already small enough, no need to prune.
     if board.width <= window_size and board.height <= window_size:
         return list(board.availables)
 

@@ -1,3 +1,12 @@
+"""
+This script compares the training results from multiple experiments. 
+It reads metrics.csv files from different training folders, 
+extracts key metrics such as episode length, replay buffer size, loss, entropy, win ratio, and learning rate, 
+and draws them together in the same SVG line charts.
+
+@author: Zengzheng Jiang
+"""
+
 import argparse
 import csv
 import os
@@ -85,13 +94,11 @@ def write_multi_svg_chart(output_file, title, y_label, named_series, colors):
     svg_lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}">')
     svg_lines.append(f'  <rect x="0" y="0" width="{width}" height="{height}" fill="#ffffff" />')
 
-    # axes
     bottom = height - padding
     right = width - padding
     svg_lines.append(f'  <line x1="{padding}" y1="{bottom}" x2="{right}" y2="{bottom}" stroke="#333333" stroke-width="2" />')
     svg_lines.append(f'  <line x1="{padding}" y1="{padding}" x2="{padding}" y2="{bottom}" stroke="#333333" stroke-width="2" />')
 
-    # title and labels
     svg_lines.append(f'  <text x="{width/2}" y="35" text-anchor="middle" font-size="24" font-family="Arial">{title}</text>')
     svg_lines.append(f'  <text x="{width/2}" y="{height-20}" text-anchor="middle" font-size="16" font-family="Arial">Batch</text>')
     svg_lines.append(
@@ -99,13 +106,11 @@ def write_multi_svg_chart(output_file, title, y_label, named_series, colors):
         f'transform="rotate(-90 28 {height/2})">{y_label}</text>'
     )
 
-    # min/max labels
     svg_lines.append(f'  <text x="{padding}" y="{padding-12}" font-size="13" font-family="Arial">{max_y:.3f}</text>')
     svg_lines.append(f'  <text x="{padding}" y="{bottom+20}" font-size="13" font-family="Arial">{min_y:.3f}</text>')
     svg_lines.append(f'  <text x="{padding}" y="{bottom+38}" font-size="13" font-family="Arial">{min_x:.0f}</text>')
     svg_lines.append(f'  <text x="{right}" y="{bottom+38}" text-anchor="end" font-size="13" font-family="Arial">{max_x:.0f}</text>')
 
-    # grid lines
     for i in range(1, 5):
         y = padding + i * (height - 2 * padding) / 5
         svg_lines.append(
@@ -113,7 +118,6 @@ def write_multi_svg_chart(output_file, title, y_label, named_series, colors):
             f'stroke="#dddddd" stroke-width="1" stroke-dasharray="4,4" />'
         )
 
-    # polylines
     for idx, (name, points) in enumerate(valid_series):
         color = colors[idx % len(colors)]
         scaled = scale_points(points, width, height, padding, bounds)
@@ -122,7 +126,6 @@ def write_multi_svg_chart(output_file, title, y_label, named_series, colors):
             f'  <polyline fill="none" stroke="{color}" stroke-width="3" points="{polyline}" />'
         )
 
-    # legend
     legend_x = right - 210
     legend_y = padding + 10
     legend_w = 190

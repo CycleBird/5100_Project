@@ -109,7 +109,6 @@ class PruningTrainPipeline(object):
     def __init__(self, init_model=None, config=None):
         config = config or {}
 
-        # Fixed rule: 8x8 board, 5 in a row
         self.board_width = config.get('board_width', 8)
         self.board_height = config.get('board_height', 8)
         self.n_in_row = config.get('n_in_row', 5)
@@ -121,7 +120,6 @@ class PruningTrainPipeline(object):
         )
         self.game = Game(self.board)
 
-        # Training params
         self.learn_rate = config.get('learn_rate', 2e-3)
         self.lr_multiplier = 1.0
         self.temp = config.get('temp', 1.0)
@@ -142,7 +140,6 @@ class PruningTrainPipeline(object):
         self.metrics_logger = MetricsLogger(self.output_dir)
         self.run_started_at = time.time()
 
-        # Current trainable policy (PyTorch)
         if init_model:
             self.policy_value_net = PolicyValueNet(
                 self.board_width,
@@ -155,7 +152,6 @@ class PruningTrainPipeline(object):
                 self.board_height
             )
 
-        # Training player uses pruning MCTS
         self.mcts_player = PrunedMCTSPlayer(
             self.policy_value_net.policy_value_fn,
             c_puct=self.c_puct,
@@ -163,7 +159,6 @@ class PruningTrainPipeline(object):
             is_selfplay=1
         )
 
-        # Opponent: provided pretrained 8x8x5 model
         candidate_models = config.get(
             'opponent_model_candidates',
             ['best_policy_8_8_5.model', 'best_policy_8_8_5.model2']

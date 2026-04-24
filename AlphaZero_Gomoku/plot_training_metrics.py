@@ -1,3 +1,11 @@
+"""
+This script reads the training metrics from a metrics.csv file and generates simple SVG line charts for key training indicators, 
+including self-play episode length, replay buffer size, loss, entropy, evaluation win ratio, and learning rate. 
+It also creates a summary.json file that records the total number of batches, updates, evaluations, and the final values of major metrics.
+
+@author: Peter Wei
+"""
+
 import argparse
 import csv
 import json
