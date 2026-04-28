@@ -1,49 +1,51 @@
-# AlphaZero Gomoku 使用方法
+# AlphaZero Gomoku Usage Guide
 
-## 1. 创建并进入 Conda 环境
+## 1. Create and Activate the Conda Environment
 
 ```bash
 conda create -n gomoku python=3.11 -y
 conda activate gomoku
 ```
 
-## 2. 安装依赖
+## 2. Install Dependencies
 
 ```bash
 pip install numpy torch matplotlib pandas
 ```
 
-## 3. 进入项目目录
+## 3. Enter the Project Directory
 
 ```bash
 cd AlphaZero_Gomoku
 ```
 
-## 4. 运行训练
+## 4. Run Training
 
-最基础的训练方式：
+Basic training:
 
 ```bash
 python train.py
 ```
 
-剪枝的训练方式：
+Pruning-based training:
 
-885规则：
-1. 与最好的885模型对比：
+885 rule:
+1. Compare with the best 885 model:
 ```bash
 python prun_best.py
 ```
 
-2. 与基础mcts对战：
+2. Play against basic MCTS:
 ```bash
 python prun_mcts.py
 ```
-884规则：
+3. 884 rule:
+```bash
+python prun_884.py
+```
 
 
-
-如果想生成适合 progress report 的训练数据和图，建议使用带参数的方式，例如：
+To generate training data and figures suitable for a progress report, it is recommended to run training with arguments, for example:
 
 ```bash
 python train.py \
@@ -58,15 +60,15 @@ python train.py \
   --output-dir report_run_small
 ```
 
-训练过程中会额外保存：
+During training, the following files will also be saved:
 
-- `metrics.csv`：每个 batch 的训练指标
-- `run_config.json`：本次训练配置
-- `.model`：本次训练出来的模型
+- `metrics.csv`: training metrics for each batch
+- `run_config.json`: configuration for this training run
+- `.model`: the model trained in this run
 
-## 5. 生成训练过程图表
+## 5. Generate Training Process Charts
 
-训练完成后运行：
+After training is complete, run:
 
 ```bash
 python plot_training_metrics.py \
@@ -74,7 +76,7 @@ python plot_training_metrics.py \
   --output-dir report_run_small/plots
 ```
 
-会生成这些图：
+This will generate the following figures:
 
 - `episode_len.svg`
 - `buffer_size.svg`
@@ -83,17 +85,17 @@ python plot_training_metrics.py \
 - `win_ratio.svg`
 - `effective_lr.svg`
 
-## 6. 输出内容说明
+## 6. Output Description
 
-训练输出目录示例：`AlphaZero_Gomoku/report_run_small`
+Example training output directory: `AlphaZero_Gomoku/report_run_small`
 
-- `metrics.csv`：原始训练数据，可用于报告表格或进一步分析
-- `plots/*.svg`：可直接插入 progress report 的图
-- `plots/summary.json`：训练结果摘要
+- `metrics.csv`：raw training data, which can be used for report tables or further analysis
+- `plots/*.svg`：figures that can be directly inserted into the progress report
+- `plots/summary.json`：summary of the training results
 
-## 7. 常用说明
+## 7. Common Notes
 
-- `train.py` 是训练入口
-- `plot_training_metrics.py` 用于把训练日志画成图
-- 如果只想快速验证流程，使用较小的 `--game-batch-num` 和 `--n-playout`
-- 如果想得到更稳定的结果，可以增大 `--game-batch-num`、`--eval-games` 和 `--n-playout`
+- `train.py` is the main training entry point
+- `plot_training_metrics.py` is used to turn training logs into figures
+- To quickly test the workflow, use smaller values for `--game-batch-num` and `--n-playout`
+- To obtain more stable results, increase `--game-batch-num`、`--eval-games` and `--n-playout`
