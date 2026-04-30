@@ -60,8 +60,15 @@ def parse_variant(token):
             'include_threats': False,
         }
 
+    include_threats = True
+    if token.endswith('plain'):
+        include_threats = False
+        token = token[:-5]
+
     if not token.startswith('w'):
-        raise ValueError("Variant should look like full, w6, or w6k20: " + token)
+        raise ValueError(
+            "Variant should look like full, w6plain, w6, or w6k20: " + token
+        )
 
     body = token[1:]
     if 'k' in body:
@@ -73,6 +80,8 @@ def parse_variant(token):
 
     window_size = int(window_text)
     name = 'window{}'.format(window_size)
+    if not include_threats:
+        name += '_plain'
     if policy_top_k is not None:
         name += '_top{}'.format(policy_top_k)
 
@@ -80,7 +89,7 @@ def parse_variant(token):
         'name': name,
         'window_size': window_size,
         'policy_top_k': policy_top_k,
-        'include_threats': True,
+        'include_threats': include_threats,
     }
 
 
@@ -304,8 +313,8 @@ def build_parser():
     parser.add_argument('--c-puct', type=float, default=5)
     parser.add_argument(
         '--variants',
-        default='w6,w6k20,w5k12',
-        help='Comma-separated variants: full, w6, w6k20, w5k12, etc.',
+        default='w6plain,w6,w6k20,w5k12',
+        help='Comma-separated variants: full, w6plain, w6, w6k20, w5k12, etc.',
     )
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--output-dir', default='pruning_ablation_results')
