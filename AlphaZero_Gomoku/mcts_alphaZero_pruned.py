@@ -2,30 +2,21 @@
 Monte Carlo Tree Search in AlphaGo Zero style, which uses a policy-value
 network to guide the tree search and evaluate the leaf nodes
 
-@author: Zengzheng Jiang
+@author: Zengzheng Jiang, Weizhi Du
 """
 
 import numpy as np
 import copy
-from move_pruning import get_pruned_moves
+from move_pruning import (
+    filter_action_probs,
+    get_pruned_moves,
+    get_threat_moves,
+)
 
 def softmax(x):
     probs = np.exp(x - np.max(x))
     probs /= np.sum(probs)
     return probs
-
-def filter_action_probs(action_probs, allowed_moves):
-    allowed_set = set(allowed_moves)
-    filtered = [(act, prob) for act, prob in action_probs if act in allowed_set]
-
-    if not filtered:
-        return action_probs
-
-    prob_sum = sum(prob for _, prob in filtered)
-    if prob_sum > 0:
-        filtered = [(act, prob / prob_sum) for act, prob in filtered]
-
-    return filtered
 
 class TreeNode(object):
     """A node in the MCTS tree.
@@ -97,7 +88,8 @@ class TreeNode(object):
 class MCTS(object):
     """An implementation of Monte Carlo Tree Search."""
 
-    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000):
+    def __init__(self, policy_value_fn, c_puct=5, n_playout=10000,
+                 window_size=6, policy_top_k=None, include_threats=True):
         """
         policy_value_fn: a function that takes in a board state and outputs
             a list of (action, probability) tuples and also a score in [-1, 1]
@@ -111,6 +103,10 @@ class MCTS(object):
         self._policy = policy_value_fn
         self._c_puct = c_puct
         self._n_playout = n_playout
+        self._window_size = window_size
+        self._policy_top_k = policy_top_k
+        self._include_threats = include_threats
+        self.last_candidate_count = 0
 
     def _playout(self, state):
         """Run a single playout from the root to the leaf, getting a value at
@@ -126,9 +122,20 @@ class MCTS(object):
 
         action_probs, leaf_value = self._policy(state)
 
-        # Change pruning here
-        pruned_moves = get_pruned_moves(state, window_size=6)
-        action_probs = filter_action_probs(action_probs, pruned_moves)
+        pruned_moves = get_pruned_moves(
+            state,
+            window_size=self._window_size,
+            include_threats=self._include_threats
+        )
+        threat_moves = []
+        if self._include_threats:
+            threat_moves = get_threat_moves(state)
+        action_probs = filter_action_probs(
+            action_probs,
+            pruned_moves,
+            policy_top_k=self._policy_top_k,
+            keep_moves=threat_moves
+        )
 
         end, winner = state.game_end()
         if not end:
@@ -157,9 +164,11 @@ class MCTS(object):
                       for act, node in self._root._children.items()]
 
         if not act_visits:
+            self.last_candidate_count = 0
             return [], []
 
         acts, visits = zip(*act_visits)
+        self.last_candidate_count = len(acts)
         act_probs = softmax(1.0/temp * np.log(np.array(visits) + 1e-10))
 
         return acts, act_probs
@@ -182,9 +191,21 @@ class MCTSPlayer(object):
     """AI player based on MCTS"""
 
     def __init__(self, policy_value_function,
-                 c_puct=5, n_playout=2000, is_selfplay=0):
-        self.mcts = MCTS(policy_value_function, c_puct, n_playout)
+                 c_puct=5, n_playout=2000, is_selfplay=0,
+                 window_size=6, policy_top_k=None, include_threats=True):
+        self.mcts = MCTS(
+            policy_value_function,
+            c_puct,
+            n_playout,
+            window_size=window_size,
+            policy_top_k=policy_top_k,
+            include_threats=include_threats
+        )
         self._is_selfplay = is_selfplay
+        self.window_size = window_size
+        self.policy_top_k = policy_top_k
+        self.include_threats = include_threats
+        self.last_candidate_count = 0
 
     def set_player_ind(self, p):
         self.player = p
@@ -193,12 +214,17 @@ class MCTSPlayer(object):
         self.mcts.update_with_move(-1)
 
     def get_action(self, board, temp=1e-3, return_prob=0):
-        sensible_moves = get_pruned_moves(board, window_size=6)
+        sensible_moves = get_pruned_moves(
+            board,
+            window_size=self.window_size,
+            include_threats=self.include_threats
+        )
         
         move_probs = np.zeros(board.width * board.height)
 
         if len(sensible_moves) > 0:
             acts, probs = self.mcts.get_move_probs(board, temp)
+            self.last_candidate_count = self.mcts.last_candidate_count
 
             if len(acts) == 0:
                 print("WARNING: no valid moves after pruning")
@@ -228,3 +254,6 @@ class MCTSPlayer(object):
 
     def __str__(self):
         return "MCTS {}".format(self.player)
+
+
+
