@@ -2,7 +2,8 @@
 """
 An implementation of the policyValueNet in Theano and Lasagne
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 from __future__ import print_function

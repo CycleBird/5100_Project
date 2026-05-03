@@ -3,7 +3,8 @@
 Implement the policy value network using numpy, so that we can play with the
 trained AI model without installing any DL framwork
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 from __future__ import print_function

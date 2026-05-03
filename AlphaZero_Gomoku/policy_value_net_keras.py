@@ -3,7 +3,8 @@
 An implementation of the policyValueNet with Keras
 Tested under Keras 2.0.5 with tensorflow-gpu 1.2.1 as backend
 
-@author: Mingxu Zhang
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Mingxu Zhang.
 """ 
 
 from __future__ import print_function

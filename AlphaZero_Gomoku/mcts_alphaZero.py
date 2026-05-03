@@ -2,7 +2,8 @@
 Monte Carlo Tree Search in AlphaGo Zero style, which uses a policy-value
 network to guide the tree search and evaluate the leaf nodes
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 import numpy as np

@@ -3,7 +3,8 @@
 An implementation of the policyValueNet in Tensorflow
 Tested in Tensorflow 1.4 and 1.5
 
-@author: Xiang Zhong
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Xiang Zhong.
 """
 
 import numpy as np

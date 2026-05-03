@@ -2,7 +2,8 @@
 """
 A pure implementation of the Monte Carlo Tree Search (MCTS)
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 import numpy as np

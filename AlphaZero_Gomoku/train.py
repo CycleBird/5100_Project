@@ -2,7 +2,8 @@
 """
 An implementation of the training pipeline of AlphaZero for Gomoku
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 from __future__ import print_function
@@ -73,9 +74,9 @@ class TrainPipeline():
     def __init__(self, init_model=None, config=None):
         config = config or {}
         # params of the board and the game
-        self.board_width = config.get('board_width', 8) # 棋盘大小在这改，或者搜board_width 
+        self.board_width = config.get('board_width', 8) # board size
         self.board_height = config.get('board_height', 8)
-        self.n_in_row = config.get('n_in_row', 4)   # 胜利条件在这改，或者搜n_in_row
+        self.n_in_row = config.get('n_in_row', 4)   # win cond
         self.board = Board(width=self.board_width,
                            height=self.board_height,
                            n_in_row=self.n_in_row)

@@ -4,10 +4,9 @@ Fast pruning ablation for AlphaZero Gomoku.
 This script does not train a new model. It loads the provided numpy policy,
 plays a small number of low-playout games, and writes CSV files that can be
 used for the pruning table and trade-off curve.
+
+@author: Weizhi Du
 """
-
-from __future__ import print_function
-
 import argparse
 import csv
 import os
@@ -40,7 +39,6 @@ def load_numpy_policy(width, height, model_file):
     except Exception:
         with open(model_path, 'rb') as f:
             policy_param = pickle.load(f, encoding='bytes')
-    print("loaded model:", model_path)
     return PolicyValueNetNumpy(width, height, policy_param)
 
 
@@ -65,10 +63,6 @@ def parse_variant(token):
         include_threats = False
         token = token[:-5]
 
-    if not token.startswith('w'):
-        raise ValueError(
-            "Variant should look like full, w6plain, w6, or w6k20: " + token
-        )
 
     body = token[1:]
     if 'k' in body:

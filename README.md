@@ -99,3 +99,9 @@ Example training output directory: `AlphaZero_Gomoku/report_run_small`
 - `plot_training_metrics.py` is used to turn training logs into figures
 - To quickly test the workflow, use smaller values for `--game-batch-num` and `--n-playout`
 - To obtain more stable results, increase `--game-batch-num`、`--eval-games` and `--n-playout`
+
+
+## 8. References
+1. AlphaZero: Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm
+2. AlphaGo Zero: Mastering the game of Go without human knowledge
+3. Some code files are adopted from Song et al. in their open-sourced project "AlphaZero Gomoku". These files are used and modified under the MIT license.

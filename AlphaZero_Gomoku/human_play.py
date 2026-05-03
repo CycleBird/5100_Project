@@ -3,7 +3,8 @@
 human VS AI models
 Input your move in the format: 2,3
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 from __future__ import print_function

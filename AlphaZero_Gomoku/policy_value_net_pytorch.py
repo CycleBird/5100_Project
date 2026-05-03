@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
 An implementation of the policyValueNet in PyTorch
-Tested in PyTorch 0.2.0 and 0.3.0
 
-@author: Junxiao Song
+Note: This code file is adopted from Song el at. under the MIT license.
+The original file was written by Junxiao Song.
 """
 
 import torch
